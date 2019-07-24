@@ -11,6 +11,17 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "build": {
+    "linux":{
+      "icon":"icon"
+    },
+    "win": {
+      "icon": "icon.ico"
+    },
+    "mac":{
+      "icon":"icon.ico"
+    }
+  },
   "main": "background.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
