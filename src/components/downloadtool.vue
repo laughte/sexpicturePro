@@ -55,7 +55,7 @@ export default {
         if (err) {
           return console.error(err)
         } else {
-          e.href.forEach((element, i) => {
+          e.src.forEach((element, i) => {
             let name = i + '.jpeg'
             let writeStream = fs.createWriteStream(path + name)
             request(element).pipe(writeStream)

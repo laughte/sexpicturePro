@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import fs from 'fs'
+import { AST_Conditional } from 'terser'
+import { promised } from 'q'
+import { resolve } from 'any-promise'
 const user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.2) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13'
 const headers = {
   'User-Agent': user_agent
@@ -15,6 +18,8 @@ export default new Vuex.Store({
     allHrefs: [],
     allHrefsTemp: [],
     newHrefs: [],
+    progressNumber: 0,
+    progressflag: false,
     laycont: null,
     folderflag: false,
     showtopbarflag: true
@@ -26,9 +31,13 @@ export default new Vuex.Store({
     getimgsrc (state) {
       fs.readFile(file, (err, data) => {
         if (err) {
-          getmoredatas(state)
-          state.allHrefsTemp = state.newHrefs
-          this.commit('saveFile')
+          // getmoredatas(state)
+          // state.allHrefsTemp = state.newHrefs
+          // this.commit('saveFile')
+          this.dispatch('actionA').then(() => {
+            state.allHrefsTemp = state.allHrefs
+            this.commit('saveFile')
+          })
         } else {
           let filedata = JSON.parse(data.toString())
           state.allHrefsTemp = filedata
@@ -41,9 +50,6 @@ export default new Vuex.Store({
     },
     backhome (state) {
       state.allHrefs = state.allHrefsTemp
-      if (state.newHrefs.length !== 0) {
-        this.commit('arrayNoSame')
-      }
     },
     laycontChange (state, n) {
       state.laycont = n
@@ -83,25 +89,46 @@ export default new Vuex.Store({
         console.log('success')
       })
     },
-    getmoredata (state) {
-      if (state.newHrefs.length === 0) {
-        getmoredatas(state)
-        // [...new Set(state.allHrefsTemp.concat(state.newHrefs))]
-      } else {
-        state.allHrefs = state.newHrefs
-        // state.allHrefsTemp = Array.from(new Set([...state.allHrefsTemp,...state.newHrefs]))
-      }
+    getmoredata (state, resolve) {
+      state.allHrefs = []
+      getmoredatas(state, resolve)
+      // [...new Set(state.allHrefsTemp.concat(state.newHrefs))]
     },
     arrayNoSame (state) {
-      let newArr = state.allHrefsTemp.concat(state.newHrefs)
-      state.allHrefsTemp = [...new Set(newArr)]
-      this.commit('saveFile')
+      let arr = state.allHrefsTemp.push(...state.newHrefs)
+
+      // let result = []
+      // let obj = {}
+      // for(let i of arr){
+      //   if(!obj[i]){
+      //     result.push(i)
+      //     obj[i]=i
+      //   }
+      // }
+      // state.allHrefs = result
+
+      let result = new Set(arr)
+      state.allHrefsTemp = [...result]
     }
+  },
+  actions: {
+    actionA ({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        commit('getmoredata', resolve)
+      })
+    },
+    actionB ({ commit }) {
+      return new Promise((resolve, reject) => {
+        commit('arrayNoSame')
+        resolve()
+      })
+    }
+
   }
 })
 
 // js爬虫相关
-function getmoredatas (state) {
+function getmoredatas (state, resolve) {
   const url = 'http://jinwandafiji.club/pw/thread.php?fid=14'
   // const url = 'http://t66y.com/thread0806.php?fid=8'
   let opts = {
@@ -118,15 +145,10 @@ function getmoredatas (state) {
           let href = 'http://k6.csnjcbnxdnb.xyz/pw/' + e
           // let href = 'http://t66y.com/' + e
           hreflist.unshift(href)
-        }
-      })
-      console.log(hreflist.length)
-      if (hreflist.length !== 0) {
-        // let alldatalist = []
-        hreflist.forEach(e => {
-          //   console.log(e);
+          // state.allHrefsTemp[i]
+
           let srclist = []
-          open_imgUrl(e, data => {
+          open_imgUrl(href, data => {
             if (data === null || data === undefined) {
               return false
             } else {
@@ -138,22 +160,46 @@ function getmoredatas (state) {
 
               let title = $('#subject_tpc').text()
               // 匹配 img 的 title 值
-              state.newHrefs.unshift({
+              state.allHrefs.unshift({
+                href: href,
                 title: title,
-                href: srclist,
+                src: srclist,
                 star: 0,
                 collect: false,
                 delete: false,
                 download: false
               })
+
               console.log(title)
+              state.newHrefs = state.allHrefs
+              console.log(hreflist.length)
+              console.log(state.newHrefs.length)
+              state.progressNumber = Math.ceil((state.newHrefs.length / hreflist.length) * 100)
+              if (state.progressNumber > 0) {
+                state.progressflag = true
+                setTimeout(() => {
+                  state.progressflag = false
+                }, 20000)
+              } else if (state.progressNumber === 100) {
+                setTimeout(() => {
+                  state.progressflag = false
+                }, 3000)
+              } else {
+                state.progressflag = false
+              }
+
+              setTimeout(() => {
+                resolve()
+              }, 20000)
+              if (hreflist.length !== 0 && state.newHrefs.length === hreflist.length) {
+                resolve()
+              }
             }
           })
-        })
-      }
+        }
+      })
     }
   })
-  state.allHrefs = state.newHrefs
 }
 
 function open_imgUrl (url, callback) {

@@ -477,10 +477,10 @@ $scrcolor:rgba(226, 189, 191, 0.9);
       <el-row>
         <el-col class="allpicture" :span="$store.state.laycont">
           <div ref="imgdoms" class="tImgCard" v-show="!e.delete" v-for="(e,i) in $store.state.allHrefs" :key="i">
-            <img :src="e.href[1]" class="image" @click="showthisFolder(e)" />
+            <img :src="e.src[1]" class="image" @click="showthisFolder(e)" />
             <i v-show="e.collect" class="showcollect el-icon-collection-tag"></i>
             <i class="righticon">
-              <el-button size="mini" type="danger" disabled>{{e.href.length}} P</el-button>
+              <el-button size="mini" type="danger" disabled>{{e.src.length}} P</el-button>
               <el-button class="ratenode" size="mini" type="danger" disabled>
                 {{e.star}}
                 <i class="el-icon-ice-cream"></i>
@@ -493,7 +493,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
           </div>
         </el-col>
         <el-col class="folderpicture animated zoomIn" :span="24" v-show="$store.state.folderflag">
-          <div class="imgcard" v-for="(e,i) in hrefs.href" :key="i">
+          <div class="imgcard" v-for="(e,i) in hrefs.src" :key="i">
             <img class="front" :src="e" alt @click="showlgpic(e)" />
             <div class="back" @click="showlgpic(e)">
               <p v-html="hrefs.title"></p>
@@ -534,7 +534,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
 
             <img class="lgboximg" :src="lghref" @click="maxWindow()" alt />
             <div class="smbox" ref="smbox">
-              <div v-for="(e,i) in hrefs.href" :key="i">
+              <div v-for="(e,i) in hrefs.src" :key="i">
                 <img :src="e" alt @mouseover="showlgpic(e)" />
               </div>
             </div>
@@ -589,7 +589,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.hrefs.href.splice(i, 1)
+          this.hrefs.src.splice(i, 1)
           this.$store.commit('saveFile')
           this.$message({
             type: 'success',
@@ -655,7 +655,7 @@ export default {
 
     // arrow button function
     arrowfunc (o) {
-      let arrHref = this.hrefs.href
+      let arrHref = this.hrefs.src
 
       arrHref.forEach((e, i) => {
         if (this.lghref === e) {
@@ -698,10 +698,10 @@ export default {
       this.xcont++
       this.animateCSS('.lgboximg', 'fadeInRight')
 
-      if (this.xcont === this.hrefs.href.length) {
+      if (this.xcont === this.hrefs.src.length) {
         this.xcont = 0
       }
-      this.showlgpic(this.hrefs.href[this.xcont])
+      this.showlgpic(this.hrefs.src[this.xcont])
       console.log(this.xcont)
       console.log(this.arrowflag)
     },

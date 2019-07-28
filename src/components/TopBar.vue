@@ -81,7 +81,7 @@ li.el-menu-item:hover{
     <i class="el-icon-close" @click="closefunc()"></i>
   </div>
   <div class="line"></div>
-  <!-- <el-progress  status="exception" :percentage="nowdataslength" :stroke-width="18" :text-inside="true"></el-progress> -->
+  <el-progress v-show="$store.state.progressflag"  status="exception" :percentage="$store.state.progressNumber" :stroke-width="18" :text-inside="true"></el-progress>
   </div>
 </template>
 
@@ -161,8 +161,15 @@ export default {
       this.animateCSS('.allpicture', 'bounceInRight')
       this.$store.commit('laycontChange', 24)
       this.$store.commit('folderflagChange', false)
-      this.$store.commit('clearallHrefs')
-      this.$store.commit('getmoredata')
+      if (this.$store.state.newHrefs.length === 0) {
+        this.$store.dispatch('actionA').then(() => {
+          this.$store.dispatch('actionB').then(() => {
+            this.$store.commit('saveFile')
+          })
+        })
+      } else {
+        this.$store.state.allHrefs = this.$store.state.newHrefs
+      }
     }
 
   }
