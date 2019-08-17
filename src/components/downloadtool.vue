@@ -49,7 +49,7 @@ export default {
   methods: {
 
     downLoad (e) {
-      let path = './images/' + e.title + '/'
+      let path = './images/' + e.title + '/';
       // let imgcount = 0
       fs.mkdir(path, { recursive: true }, err => {
         if (err) {
@@ -57,15 +57,15 @@ export default {
         } else {
           e.src.forEach((element, i) => {
             let name = i + '.jpeg'
-            let writeStream = fs.createWriteStream(path + name)
-            request(element).pipe(writeStream)
+            let writeStream = fs.createWriteStream(path + name);
+            request(element).pipe(writeStream);
             // file write finished
             writeStream.on('finish', () => {
               e.star++
               // console.log(this.imgcount)
             })
-          })
-          e.download = true
+          });
+          e.download = true;
           this.$store.commit('saveFile')
         }
       })
@@ -82,8 +82,8 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          e.delete = true
-          this.$store.commit('saveFile')
+          e.delete = true;
+          this.$store.commit('saveFile');
           this.$message({
             type: 'success',
             message: '删除成功!'

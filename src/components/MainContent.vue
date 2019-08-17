@@ -583,7 +583,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.hrefs.src.splice(i, 1);
+          this.hrefs.srclist.splice(i, 1);
           this.$store.commit("saveFile");
           this.$message({
             type: "success",
@@ -682,8 +682,8 @@ export default {
         if (this.arrowflag === true) {
           clearInterval(this.settimer);
         } else {
-          console.log(this.xcont);
-          console.log(this.arrowflag);
+          // console.log(this.xcont);
+          // console.log(this.arrowflag);
           this.settimer = setInterval(this.setscend, 3200);
         }
       }
@@ -692,12 +692,12 @@ export default {
       this.xcont++;
       this.animateCSS(".lgboximg", "fadeInRight");
 
-      if (this.xcont === this.hrefs.src.length) {
+      if (this.xcont === this.hrefs.srclist.length) {
         this.xcont = 0;
       }
-      this.showlgpic(this.hrefs.src[this.xcont]);
-      console.log(this.xcont);
-      console.log(this.arrowflag);
+      this.showlgpic(this.hrefs.srclist[this.xcont]);
+      // console.log(this.xcont);
+      // console.log(this.arrowflag);
     },
     mousemovefunc(e) {
       // console.log(e.pageX, e.pageY,e.screenX,e.screenY)

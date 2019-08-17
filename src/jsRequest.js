@@ -40,24 +40,24 @@ function jsRequest(state, resolve) {
 
   function doRequest(urlPro, callback) {
     // return new Promise((resolve, reject) => {
-    let url = ""
-    let type = ''
+    let url = "";
+    let type = '';
     if (typeof urlPro === 'object') {
-      url = urlPro.href
-      type = urlPro.title
+      url = urlPro.href;
+      type = urlPro.title;
     } else {
       url = urlPro
     }
-    let user_agent = userAgents[parseInt((Math.random() * userAgents.length))]
+    let user_agent = userAgents[parseInt((Math.random() * userAgents.length))];
     let headers = {
       'User-Agent': user_agent
-    }
+    };
     let opts = {
       url,
       headers
-    }
+    };
     request(opts, (err, res, body) => {
-      if (err) console.error(err)
+      if (err) console.error(err);
       // console.log(body)
       if (callback) {
         callback(body, type, urlPro)
@@ -71,49 +71,40 @@ function jsRequest(state, resolve) {
   function getImgSrc(res, type, urlPro) {
 
     if (res) {
-      let srclist = []
+      let srclist = [];
       const $ = cheerio.load(res)
       // let title = $("#subject_tpc").text()
       $('#read_tpc a img').each(function (i) {
         srclist[i] = $(this).attr('src')
-        // if ($(this).attr('src')) {
-        //   let stmt = db.prepare(`insert into srcTable (hrefId,src,)values(?,?,0,0,0)`)
-        //   stmt.run(urlPro.id, srclist[i])
-        //   stmt.finalize();
-        // }
-      })
+      });
 
       if (srclist.length > 6) {
-        urlPro.srclist = srclist
+        urlPro.srclist = srclist;
         if (state.allHrefsTemp.length > 0 && JSON.stringify(state.allHrefsTemp).indexOf(JSON.stringify(urlPro)) === -1) {
-          console.log(JSON.stringify(state.allHrefsTemp).indexOf(JSON.stringify(urlPro)))
-          console.log(state.allHrefs.length)
-          state.allHrefs.push(urlPro)
+          console.log(JSON.stringify(state.allHrefsTemp).indexOf(JSON.stringify(urlPro)));
+          console.log(state.allHrefs.length);
+          state.allHrefs.push(urlPro);
           state.newHrefs = state.allHrefs
-
 
 
         } else if (state.allHrefsTemp.length === 0) {
-          state.allHrefs.push(urlPro)
-          state.newHrefs = state.allHrefs
-          console.log(state.allhref.length)
+          state.allHrefs.push(urlPro);
+          state.newHrefs = state.allHrefs;
+          console.log(state.newHrefs.length);
 
-          state.progressNumber = Math.ceil((state.newHrefs.length / state.allhref.length) * 100)
-          if (state.progressNumber > 0) {
-            state.progressflag = true
-          } else if (state.progressNumber = 100) {
-            setTimeout(() => {
-              state.progressflag = false
-            }, 5000);
-          } else {
-            setTimeout(() => {
+          state.progressNumber = Math.ceil((state.newHrefs.length / (state.allhref.length-16)) * 100);
+          if (state.progressNumber > 0 && state.progressNumber<100) {
+            state.progressflag = true;
+            setTimeout(()=>{
+              state.progressflag = false;
               resolve()
-              state.progressflag = false
-            }, 20000);
-          }
-
-          if (state.allhref.length === state.newHrefs.length) {
+            },10000)
+          }else {
+            state.progressflag = true;
             resolve()
+            setTimeout(()=>{
+              state.progressflag = false;
+            },3000)
           }
         }
 

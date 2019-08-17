@@ -1,4 +1,4 @@
-const request = require('request')
+const request = require('request');
 const cheerio = require('cheerio');
 
 
@@ -25,29 +25,28 @@ const userAgents = [
 ];
 
 
-
 function requertHref(state, resolve) {
-
     function doRequest(urlPro, callback) {
         // return new Promise((resolve, reject) => {
-        let url = ""
-        let type = ''
+        let url = "";
+        let type = '';
         if (typeof urlPro === 'object') {
-            url = urlPro.href
+            url = urlPro.href;
             type = urlPro.title
         } else {
             url = urlPro
         }
-        let user_agent = userAgents[parseInt((Math.random() * userAgents.length))]
+        let user_agent = userAgents[parseInt((Math.random() * userAgents.length))];
         let headers = {
             'User-Agent': user_agent
-        }
+        };
         let opts = {
             url,
             headers
-        }
+        };
         request(opts, (err, res, body) => {
-            if (err) console.error(err)
+            // eslint-disable-next-line no-console
+            if (err) console.log(err);
             // console.log(body)
             if (callback) {
                 callback(body, type, urlPro)
@@ -57,52 +56,75 @@ function requertHref(state, resolve) {
 
     }
 
-    function gettypehref(res) {
-        let $ = cheerio.load(res)
+    //加载多种类型图片的方法
+    // function gettypehref(res) {
+    //     let $ = cheerio.load(res);
+    //
+    //     $('tr.f_one th h2.f14 a.fnamecolor').each(function (i, e) {
+    //
+    //         state.hreftype[i] = {
+    //             title: $(this).text(),
+    //             href: 'http://bbsk2048.biz/2048/' + $(this).attr('href')
+    //         };
+    //         doRequest(state.hreftype[i], getPictureUrl)
+    //     })
+    //
+    // }
 
-        $('tr.f_one th h2.f14 a.fnamecolor').each(function (i, e) {
+    // function getPictureUrl(res, type) {
+    //     const $ = cheerio.load(res);
+    //     $('tr.tr3 td.tal a.subject').each(function () {
+    //
+    //         let href = 'http://bbsk2048.biz/2048/' + $(this).attr('href');
+    //         state.allhref.push({
+    //             type,
+    //             title: $(this).text(),
+    //             href,
+    //             star: 0,
+    //             collect: false,
+    //             delete: false,
+    //             download: false
+    //         });
+    //         if (state.allhref.length === 360) {
+    //             resolve()
+    //         }
+    //
+    //     })
+    // }
 
-            state.hreftype[i] = {
-                title: $(this).text(),
-                href: 'http://bbsk2048.biz/2048/' + $(this).attr('href')
-            }
-            // console.log(state.hreftype[i])
-            doRequest(state.hreftype[i], getPictureUrl)
-        })
+    //加载单一类型的方法
+    function getpagecount(res){
+            const $ = cheerio.load(res);
+            $('tr.tr3 td.tal a.subject').each(function () {
 
-    }
+                let href = 'http://bbsk2048.biz/2048/' + $(this).attr('href');
+                state.allhref.push({
+                    title: $(this).text(),
+                    href,
+                    star: 0,
+                    collect: false,
+                    delete: false,
+                    download: false
+                });
+                if(state.allhref.length===144){
+                    resolve()
+                }
 
-    function getPictureUrl(res, type) {
-        const $ = cheerio.load(res)
-        $('tr.tr3 td.tal a.subject').each(function (i) {
-
-            let href = 'http://bbsk2048.biz/2048/' + $(this).attr('href')
-            state.allhref.push({
-                type,
-                title: $(this).text(),
-                href,
-                star: 0,
-                collect: false,
-                delete: false,
-                download: false
             })
-            if (state.allhref.length === 360) {
-                resolve()
-            }
-            // console.log(state.allhref.length)
-
-            // let stmt = db.prepare(`insert into hrefTable (type,title,href)values(?,?,?,0,0,0,0)`)
-            // stmt.run(state.allhref[i].type, state.allhref[i].title, state.allhref[i].href)
-            // stmt.finalize();
-
-            // console.log(state.allhref[i])
-
-        })
     }
+
 
     function begin() {
-        console.log("怎么回事啊小老弟")
-        doRequest(state.url, gettypehref)
+        // eslint-disable-next-line no-console
+        console.log("开始加载");
+        for(let i =2;i<6;i++){
+            let url = state.url.href + `-page-${i}.html`;
+            doRequest(url, getpagecount);
+
+
+
+        }
+
     }
 
     begin()

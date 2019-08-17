@@ -1,5 +1,5 @@
 {
-  "name": "newpicture",
+  "name": "picturepro",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,20 +16,10 @@
     "cheerio": "^1.0.0-rc.3",
     "core-js": "^2.6.5",
     "element-ui": "^2.4.5",
-    "knex": "^0.19.1",
     "superagent": "^5.1.0",
     "vue": "^2.6.10",
     "vuex": "^3.1.1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/CaanDoll/easy-invoices.git"
-  },
-  "keywords": [
-    "electron",
-    "electron-vue",
-    "sqlite3"
-  ],
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
     "@vue/cli-plugin-eslint": "^3.10.0",

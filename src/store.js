@@ -1,33 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import fs from 'fs'
+let dore = require('./jsRequest');
+let reqHref = require('./requestHref');
 
-
-// let read = require('./readSQLite3')
-
-let dore = require('./jsRequest')
-let reqHref = require('./requestHref')
-
-// function readhref() {
-//   var sqlite3 = require('sqlite3').verbose();
-
-//   const db = new sqlite3.Database('./hreDB.sqlite')
-//   // return new Promise((resolve, reject) => {
-//   var queryhref = 'select * from hrefTable'; // left join srcTable on hrefTable.id = srcTable.hrefId
-//   db.all(queryhref, (err, rows) => {
-//     // resolve(rows)
-//     console.log(rows)
-//   })
-//   console.log("what's your problem???")
-//   // })
-
-// }
-
-
-
-
-let file = './sexpicturehref.json'
-Vue.use(Vuex)
+let file = './sexpicturehref.json';
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -43,8 +21,10 @@ export default new Vuex.Store({
     showtopbarflag: true,
     hreftype: [],
     url: {
-      "title": "2048核基地",
-      "href": 'http://bbsk2048.biz/2048/thread.php?fid-7.html'
+        "type":"清纯唯美",
+        "href":"http://bbsk2048.biz/2048/thread.php?fid-21"
+      // "title": "2048核基地",
+      // "href": 'http://bbsk2048.biz/2048/thread.php?fid-7.html'
     }
   },
   getters: {
@@ -58,14 +38,14 @@ export default new Vuex.Store({
         if (err) {
           this.dispatch('actionrequest').then(() => {
             this.dispatch('actionA').then(() => {
-              state.allHrefsTemp = state.allHrefs
-              this.commit('saveFile')
+              state.allHrefsTemp = state.allHrefs;
+              // this.commit('saveFile')
             })
           })
 
         } else {
-          let filedata = JSON.parse(data.toString())
-          state.allHrefsTemp = filedata
+          let filedata = JSON.parse(data.toString());
+          state.allHrefsTemp = filedata;
           state.allHrefs = state.allHrefsTemp
         }
       })
@@ -87,12 +67,12 @@ export default new Vuex.Store({
     },
     filterAllHrefs(state, f) {
       state.allHrefsTemp.forEach(e => {
-        const imgdoms = document.querySelectorAll('.tImgCard')
+        const imgdoms = document.querySelectorAll('.tImgCard');
         if (f === 'collect') {
           // this.animateCSS('.allpicture','bounceInRight');
           imgdoms.forEach(e => {
             animateGroupCSS(e, 'bounceInUp')
-          })
+          });
           if (e.collect === true) {
             state.allHrefs.unshift(e)
           }
@@ -100,7 +80,7 @@ export default new Vuex.Store({
           // this.animateCSS(".allpicture", "bounceInRight");
           imgdoms.forEach(e => {
             animateGroupCSS(e, 'bounceInUp')
-          })
+          });
           if (e.download === true) {
             state.allHrefs.unshift(e)
           }
@@ -122,7 +102,7 @@ export default new Vuex.Store({
       reqHref.requertHref(state, resolve)
     },
     getmoredata(state, resolve) {
-      state.allHrefs = []
+      state.allHrefs = [];
       // reqHref.requertHref(state)
       dore.jsRequest(state, resolve)
 
@@ -130,11 +110,11 @@ export default new Vuex.Store({
 
     },
     arrayNoSame(state) {
-      let arr = state.allHrefsTemp.push(...state.newHrefs)
+      let arr = state.allHrefsTemp.push(...state.newHrefs);
 
 
 
-      let result = new Set(arr)
+      let result = new Set(arr);
       state.allHrefsTemp = [...result]
     }
   },
@@ -150,14 +130,14 @@ export default new Vuex.Store({
       commit
     }) {
       return new Promise((resolve) => {
-        commit('getmoredata', resolve)
+        commit('getmoredata', resolve);
       })
     },
     actionB({
       commit
     }) {
       return new Promise((resolve) => {
-        commit('arrayNoSame')
+        commit('arrayNoSame');
         resolve()
       })
     }
