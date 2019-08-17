@@ -1,4 +1,4 @@
-# sexpicturepro
+# newpicture
 
 ## Project setup
 ```

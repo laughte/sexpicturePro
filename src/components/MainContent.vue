@@ -1,7 +1,6 @@
 <!--suppress ALL -->
 <style lang="scss" scoped>
-
-$scrcolor:rgba(226, 189, 191, 0.9);
+$scrcolor: rgba(226, 189, 191, 0.9);
 
 /*滚动条样式*/
 .el-row::-webkit-scrollbar {
@@ -52,7 +51,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
 
 .el-row {
   width: 100%;
-   position:fixed;
+  position: fixed;
   // .actpicture {
   //   justify-content: start !important;
   //
@@ -84,8 +83,8 @@ $scrcolor:rgba(226, 189, 191, 0.9);
 
   .allpicture {
     position: fixed;
-  height: 97vh;
-  overflow: scroll;
+    height: 97vh;
+    overflow: scroll;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
@@ -225,7 +224,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
 
   .folderpicture {
     height: 97vh;
-    position:fixed;
+    position: fixed;
     display: flex;
     justify-content: space-around;
     overflow: scroll;
@@ -407,7 +406,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
   .smallbar {
     div.smbox {
       height: 14vh;
-      background: rgba(255, 241, 223, 0.8);
+      // background: rgba(255, 241, 223, 0.8);
       div {
         margin-left: 0.5em;
         transition: all 0.3s;
@@ -462,8 +461,7 @@ $scrcolor:rgba(226, 189, 191, 0.9);
 </style>
 
 <template>
-
-    <!-- <top-bar
+  <!-- <top-bar
       class="topbar"
       ref="topbar"
       v-show="showtopbarflag"
@@ -472,267 +470,263 @@ $scrcolor:rgba(226, 189, 191, 0.9);
       @getmore="getmore"
       :nowdataslength="nowdataslength"
     ></top-bar>
-    -->
+  -->
 
-      <el-row>
-        <el-col class="allpicture" :span="$store.state.laycont">
-          <div ref="imgdoms" class="tImgCard" v-show="!e.delete" v-for="(e,i) in $store.state.allHrefs" :key="i">
-            <img :src="e.src[1]" class="image" @click="showthisFolder(e)" />
-            <i v-show="e.collect" class="showcollect el-icon-collection-tag"></i>
-            <i class="righticon">
-              <el-button size="mini" type="danger" disabled>{{e.src.length}} P</el-button>
-              <el-button class="ratenode" size="mini" type="danger" disabled>
-                {{e.star}}
-                <i class="el-icon-ice-cream"></i>
-              </el-button>
-            </i>
-            <div class="iconbox" @click="showthisFolder(e)">
-              <div class="top-msg" v-html="e.title"></div>
-              <downloadtool :downtooldata="e" @savefile="saveFile()" />
-            </div>
+  <el-row>
+    <el-col class="allpicture" :span="$store.state.laycont">
+      <div
+        ref="imgdoms"
+        class="tImgCard"
+        v-show="!e.delete"
+        v-for="(e,i) in $store.state.allHrefs"
+        :key="i"
+      >
+        <img :src="e.srclist[1]" class="image" @click="showthisFolder(e)" />
+        <i v-show="e.collect" class="showcollect el-icon-collection-tag"></i>
+        <i class="righticon">
+          <el-button size="mini" type="danger" disabled>{{e.srclist.length}} P</el-button>
+          <el-button class="ratenode" size="mini" type="danger" disabled>
+            {{e.star}}
+            <i class="el-icon-ice-cream"></i>
+          </el-button>
+        </i>
+        <div class="iconbox" @click="showthisFolder(e)">
+          <div class="top-msg" v-html="e.title"></div>
+          <downloadtool :downtooldata="e" @savefile="saveFile()" />
+        </div>
+      </div>
+    </el-col>
+    <el-col class="folderpicture animated zoomIn" :span="24" v-show="$store.state.folderflag">
+      <div class="imgcard" v-for="(e,i) in hrefs.srclist" :key="i">
+        <img class="front" :src="e" alt @click="showlgpic(e)" />
+        <div class="back" @click="showlgpic(e)">
+          <p v-html="hrefs.title"></p>
+          <div>
+            <el-button size="medium" type="danger" round @click.stop.prevent>喜欢</el-button>
+            <el-button size="medium" type="warning" round @click.stop.prevent="deletepic(i)">删除</el-button>
           </div>
-        </el-col>
-        <el-col class="folderpicture animated zoomIn" :span="24" v-show="$store.state.folderflag">
-          <div class="imgcard" v-for="(e,i) in hrefs.src" :key="i">
-            <img class="front" :src="e" alt @click="showlgpic(e)" />
-            <div class="back" @click="showlgpic(e)">
-              <p v-html="hrefs.title"></p>
-              <div>
-                <el-button size="medium" type="danger" round @click.stop.prevent>喜欢</el-button>
-                <el-button size="medium" type="warning" round @click.stop.prevent="deletepic(i)">删除</el-button>
-              </div>
-            </div>
+        </div>
+      </div>
+    </el-col>
+
+    <transition name="fade">
+      <div
+        class="lgbox"
+        :class="{'smallbar':smallbarflag}"
+        v-show="showlgpicflag"
+        @mousemove="mousemovefunc($event)"
+        ref="smallbar"
+      >
+        <i class="el-icon-close" @click="closethis()"></i>
+        <i
+          ref="arrowstop"
+          class="arrowicon"
+          :class="arrowclassicon[arrowflag]"
+          @click="arrowfunc('mid')"
+        ></i>
+        <i class="arrowicon el-icon-arrow-left" @click="arrowfunc('left')"></i>
+
+        <i class="arrowicon el-icon-arrow-right" @click="arrowfunc('right')"></i>
+
+        <img class="lgboximg" :src="lghref" @click="maxWindow()" alt />
+        <div class="smbox" ref="smbox">
+          <div v-for="(e,i) in hrefs.srclist" :key="i">
+            <img :src="e" alt @mouseover="showlgpic(e)" />
           </div>
-        </el-col>
-
-        <transition name="fade">
-          <div
-            class="lgbox"
-            :class="{'smallbar':smallbarflag}"
-            v-show="showlgpicflag"
-            @mousemove="mousemovefunc($event)"
-            ref="smallbar"
-          >
-            <i class="el-icon-close" @click="closethis()"></i>
-            <i
-              ref="arrowstop"
-              class="arrowicon"
-              :class="arrowclassicon[arrowflag]"
-              @click="arrowfunc('mid')"
-            ></i>
-            <i
-              class="arrowicon el-icon-arrow-left"
-              @click="arrowfunc('left')"
-              @keydown.left="arrowfunc('left')"
-            ></i>
-
-            <i
-              class="arrowicon el-icon-arrow-right"
-              @click="arrowfunc('right')"
-              @keyup.right="arrowfunc('right')"
-            ></i>
-
-            <img class="lgboximg" :src="lghref" @click="maxWindow()" alt />
-            <div class="smbox" ref="smbox">
-              <div v-for="(e,i) in hrefs.src" :key="i">
-                <img :src="e" alt @mouseover="showlgpic(e)" />
-              </div>
-            </div>
-          </div>
-        </transition>
-      </el-row>
-
+        </div>
+      </div>
+    </transition>
+  </el-row>
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
-import downloadtool from './downloadtool'
-import fs from 'fs'
-let file = './picturehref.json'
+import { ipcRenderer } from "electron";
+import downloadtool from "./downloadtool";
+import fs from "fs";
+let file = "./picturehref.json";
 
 export default {
-  name: 'sexpicture',
+  name: "sexpicture",
   components: { downloadtool },
   props: {
     msg: String
   },
-  data () {
+  data() {
     return {
       delhrefs: [],
       hrefs: [],
-      lghref: '',
+      lghref: "",
       rateValue: null,
       showlgpicflag: false,
       smallbarflag: false,
       showtopbarflag: true,
       arrowclassicon: {
-        true: 'el-icon-video-play',
-        false: 'el-icon-video-pause'
+        true: "el-icon-video-play",
+        false: "el-icon-video-pause"
       },
       arrowflag: true
-    }
+    };
   },
   methods: {
-
-    showthisFolder (e) {
-      this.$store.commit('folderflagChange', true)
-      this.$store.commit('laycontChange', 0)
-      this.hrefs = e
+    showthisFolder(e) {
+      this.$store.commit("folderflagChange", true);
+      this.$store.commit("laycontChange", 0);
+      this.hrefs = e;
       // console.log(this.$refs.allimgdom)
     },
 
-    deletepic (i) {
+    deletepic(i) {
       // let foldPic= this.$refs.foldPic
-      this.$confirm('此操作将删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      this.$confirm("此操作将删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       })
         .then(() => {
-          this.hrefs.src.splice(i, 1)
-          this.$store.commit('saveFile')
+          this.hrefs.src.splice(i, 1);
+          this.$store.commit("saveFile");
           this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+            type: "success",
+            message: "删除成功!"
+          });
         })
 
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
 
     // 给元素添加和移除模糊效果
-    nodeBlur (e, f) {
-      const node = document.querySelector(e)
+    nodeBlur(e, f) {
+      const node = document.querySelector(e);
       if (f === true) {
-        node.classList.add('boxblur')
+        node.classList.add("boxblur");
       } else {
-        node.classList.remove('boxblur')
+        node.classList.remove("boxblur");
       }
     },
 
     // 给元素绑定动画
-    animateCSS (element, animationName, callback) {
-      const node = document.querySelector(element)
-      node.classList.add('animated', animationName)
+    animateCSS(element, animationName, callback) {
+      const node = document.querySelector(element);
+      node.classList.add("animated", animationName);
 
-      function handleAnimationEnd () {
-        node.classList.remove('animated', animationName)
-        node.removeEventListener('animationend', handleAnimationEnd)
+      function handleAnimationEnd() {
+        node.classList.remove("animated", animationName);
+        node.removeEventListener("animationend", handleAnimationEnd);
 
-        if (typeof callback === 'function') callback()
+        if (typeof callback === "function") callback();
       }
 
-      node.addEventListener('animationend', handleAnimationEnd)
+      node.addEventListener("animationend", handleAnimationEnd);
     },
 
-    showlgpic (e) {
+    showlgpic(e) {
       // const node = document.querySelector('.folderpicture');
       // node.classList.add('boxblur')
-      this.nodeBlur('.folderpicture', true)
-      this.showlgpicflag = true
-      this.lghref = e
-      this.$store.commit('topbarflagChange', false)
+      this.nodeBlur(".folderpicture", true);
+      this.showlgpicflag = true;
+      this.lghref = e;
+      this.$store.commit("topbarflagChange", false);
     },
-    closethis () {
+    closethis() {
       // const node = document.querySelector('.folderpicture');
       // node.classList.remove('boxblur')
-      this.nodeBlur('.folderpicture', false)
-      this.showlgpicflag = false
-      this.$store.commit('topbarflagChange', true)
-      clearInterval(this.settimer)
-      this.arrowflag = true
+      this.nodeBlur(".folderpicture", false);
+      this.showlgpicflag = false;
+      this.$store.commit("topbarflagChange", true);
+      clearInterval(this.settimer);
+      this.arrowflag = true;
     },
 
     // click the lgpic function
-    maxWindow () {
-      ipcRenderer.send('max')
+    maxWindow() {
+      ipcRenderer.send("max");
     },
 
     // arrow button function
-    arrowfunc (o) {
-      let arrHref = this.hrefs.src
+    arrowfunc(o) {
+      let arrHref = this.hrefs.srclist;
 
       arrHref.forEach((e, i) => {
         if (this.lghref === e) {
-          this.xcont = i
+          this.xcont = i;
         }
-      })
-      if (o === 'left') {
-        this.xcont--
-        this.animateCSS('.lgboximg', 'fadeInLeft')
+      });
+      if (o === "left") {
+        this.xcont--;
+        this.animateCSS(".lgboximg", "fadeInLeft");
 
         if (this.xcont === -1) {
-          this.xcont = arrHref.length - 1
+          this.xcont = arrHref.length - 1;
           // alert("going start don't click again ")
         }
-        this.showlgpic(arrHref[this.xcont])
+        this.showlgpic(arrHref[this.xcont]);
 
         // console.log(this.xcont)
-      } else if (o === 'right') {
-        this.animateCSS('.lgboximg', 'fadeInRight')
+      } else if (o === "right") {
+        this.animateCSS(".lgboximg", "fadeInRight");
 
-        this.xcont++
+        this.xcont++;
         if (this.xcont === arrHref.length) {
-          this.xcont = 0
+          this.xcont = 0;
         }
-        this.showlgpic(arrHref[this.xcont])
+        this.showlgpic(arrHref[this.xcont]);
         // console.log(this.xcont)
-      } else if (o === 'mid') {
+      } else if (o === "mid") {
         // 幻灯片播放和停止
-        this.arrowflag = !this.arrowflag
+        this.arrowflag = !this.arrowflag;
         if (this.arrowflag === true) {
-          clearInterval(this.settimer)
+          clearInterval(this.settimer);
         } else {
-          console.log(this.xcont)
-          console.log(this.arrowflag)
-          this.settimer = setInterval(this.setscend, 2200)
+          console.log(this.xcont);
+          console.log(this.arrowflag);
+          this.settimer = setInterval(this.setscend, 3200);
         }
       }
     },
-    setscend () {
-      this.xcont++
-      this.animateCSS('.lgboximg', 'fadeInRight')
+    setscend() {
+      this.xcont++;
+      this.animateCSS(".lgboximg", "fadeInRight");
 
       if (this.xcont === this.hrefs.src.length) {
-        this.xcont = 0
+        this.xcont = 0;
       }
-      this.showlgpic(this.hrefs.src[this.xcont])
-      console.log(this.xcont)
-      console.log(this.arrowflag)
+      this.showlgpic(this.hrefs.src[this.xcont]);
+      console.log(this.xcont);
+      console.log(this.arrowflag);
     },
-    mousemovefunc (e) {
+    mousemovefunc(e) {
       // console.log(e.pageX, e.pageY,e.screenX,e.screenY)
-      let smbarH = this.$refs.smallbar.offsetHeight
-      let smbarX = this.$refs.smallbar.offsetWidth
-      let smbox = this.$refs.smbox
-      let smboxW = smbox.offsetWidth
+      let smbarH = this.$refs.smallbar.offsetHeight;
+      let smbarX = this.$refs.smallbar.offsetWidth;
+      let smbox = this.$refs.smbox;
+      let smboxW = smbox.offsetWidth;
       // console.log(smboxW)
 
       if (e.pageY / smbarH > 0.8) {
-        this.smallbarflag = true
-        smbox.scrollLeft = (e.pageX / smbarX) * smboxW * 2
+        this.smallbarflag = true;
+        smbox.scrollLeft = (e.pageX / smbarX) * smboxW * 2;
         if (e.pageX / smbarX < 0.1) {
-          smbox.scrollLeft = 0
+          smbox.scrollLeft = 0;
         } else if (e.pageX / smbarX > 0.95) {
-          smbox.scrollLeft = smboxW * 2.5
+          smbox.scrollLeft = smboxW * 2.5;
         }
       } else {
-        this.smallbarflag = false
+        this.smallbarflag = false;
       }
     }
   },
-  beforeCreate () {},
+  beforeCreate() {},
 
-  beforeMount () {},
+  beforeMount() {},
 
-  beforeUpdate () {},
-  updated () {},
-  beforeDestroy () {},
-  destroyed () {}
-}
+  beforeUpdate() {},
+  updated() {},
+  beforeDestroy() {},
+  destroyed() {}
+};
 </script>

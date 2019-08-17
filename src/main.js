@@ -4,6 +4,7 @@ import store from './store'
 import './plugins/element.js'
 import './plugins/animate.css'
 
+
 Vue.config.productionTip = false
 
 new Vue({
